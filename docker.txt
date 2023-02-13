@@ -118,7 +118,7 @@ FROM nginx
 MAINTAINER dimuthu
 RUN apt-get update
 RUN apt-get install -y nginx
-COPY . /usr/share/nginx/html
+COPY . /usr/share/nginx/html  //  COPY . /var/www/html
 
 FROM nginx
 COPY . /usr/share/nginx/html
@@ -134,33 +134,35 @@ touch docker-compose.yml
 vim docker-compose
 
 version: '3'
-services:
- wordpress:
- image: wordpress
- ports:
- - "8880:80"
- depends_on:
- - db
- volumes:
- - wordpress_files:/var/www/html
- environment:
- WORDPRESS_DB_HOST: db:3306
- WORDPRESS_DB_USER: wordpress
- WORDPRESS_DB_PASSWORD: my_wordpress
- restart: always
- db:
- image: mysql
- volumes:
- - db_data:/var/lib/mysql
- environment:
- MYSQL_ROOT_PASSWORD: mydb
- MYSQL_DATABASE: wordpress
- MYSQL_USER: wordpress
- MYSQL_PASSWORD: my_wordpress
- restart: always
-volumes:
- wordpress_files:
- db_data:
 
+services:
+  wordpress:
+    image: wordpress
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    volumes:
+      - wordpress_files:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: my_wp
+    restart: always
+
+  db:
+    image: mysql
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mydb
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: my_wp
+    restart: always
+
+volumes:
+  wordpress_files:
+  db_data:
 
 run - docker-compose up -
